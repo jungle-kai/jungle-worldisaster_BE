@@ -182,11 +182,11 @@ const rw_edge_cases = {
 };
 
 const pool = new Pool({
-    user: 'postgres',
-    host: '',
+    user: process.env.AWS_USER,
+    host: process.env.AWS_HOST,
     port: 5432,
-    password: '',
-    database: '',
+    password: process.env.AWS_PWD,
+    database: process.env.AWS_DBN,
     ssl: {
         rejectUnauthorized: false
     }

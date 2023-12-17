@@ -30,7 +30,7 @@ export class AuthController {
             throw new UnauthorizedException('No user from Google');
         }
 
-        console.log('\nAPI : GET call made to fetch user details');
+        // console.log('\nAPI : GET call made to fetch user details');
 
         const { email } = req.user;
         const user = this.authService.findUserByEmail(email);
@@ -51,7 +51,6 @@ export class AuthController {
     @Get('/google/redirect')
     @UseGuards(AuthGuard('google'))
     async googleAuthRedirect(@Req() req: CustomRequest, @Res() res: Response) {
-        console.log('Received preLoginUrl:', req.query.preLoginUrl);
         if (!req.user) {
             throw new UnauthorizedException('No user from Google');
         }
@@ -118,14 +117,12 @@ export class AuthController {
     @UseGuards(AuthGuard('jwt-access'))
     @Get('Test')
     async test(@Req() req: CustomRequest, @Res() res: Response) {
-        console.log('req.user', req.user);
         res.send('test');
     }
 
     @UseGuards(AuthGuard('jwt-refresh'))
     @Get('refresh')
     async restoreAccessToken(@Req() req: Request): Promise<{ accessToken: string }> {
-        console.log(req.cookies);
         const refreshToken = req.cookies['refresh-token'];
         const accessToken = await this.authService.refreshToken(refreshToken);
         return { accessToken };
@@ -136,7 +133,7 @@ export class AuthController {
     async getUserInfo(@Req() req: CustomRequest, @Res() res: Response) {
 
 
-        console.log('\nAPI : GET call made to fetch user authentication data');
+        // console.log('\nAPI : GET call made to fetch user authentication data');
 
         const { email } = req.user;
 
@@ -177,7 +174,6 @@ export class AuthController {
             }
 
             await this.authService.updateUser(user);
-            // console.log(req.body);
             res.status(200).json({ success: true, greenAlert: (await user).subscriptionLevel_Green, orangeAlert: (await user).subscriptionLevel_Orange, redAlert: (await user).subscriptionLevel_Red, nation1: (await user).subscriptionCountry1, nation2: (await user).subscriptionCountry2, nation3: (await user).subscriptionCountry3 });
         } catch (error) {
             res.status(500).json({ success: false, message: error.message });
@@ -197,7 +193,6 @@ export class AuthController {
         }
         try {
             await this.authService.deleteUserByEmail(email);
-            console.log(user.name + ' 탈퇴 완료');
             res.clearCookie('access-token', {
                 domain: 'worldisaster.com',
                 path: '/',

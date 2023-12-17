@@ -82,13 +82,13 @@ export class NewDisastersService {
 
     @Cron(CronExpression.EVERY_30_SECONDS)
     async handleDisasterUpdate() {
-        console.log('\nGDACS Disaster Update Initiated...');
+        // console.log('\nGDACS Disaster Update Initiated...');
 
         try {
             // 보조 함수들을 통해서 실시간 RSS 피드 내역을 처리, Disasters 배열에 담기
             const rssFeedXml = await this.fetchRssFeed();
             const disasters = await this.parseRssFeed(rssFeedXml);
-            console.log(`${disasters.length} disasters in current GDACS feed...`);
+            // console.log(`${disasters.length} disasters in current GDACS feed...`);
 
             // 비교를 위해서 현재 DB에서 dStatus : real-time/ongoing/past 상태의 재난들을 배열에 담기
             const dbDisasters = await this.disasterDetailRepository.find({
@@ -107,7 +107,7 @@ export class NewDisastersService {
 
             // 함수가 호출되는 현재 시각을 한번 정의
             const now = new Date();
-            console.log(`Current time is ${now.toString()}...`);
+            // console.log(`Current time is ${now.toString()}...`);
 
             // 본격적으로 새로운 disasters 배열의 개별 Element들을 하나씩 처리
             for (const disaster of disasters) {
@@ -137,7 +137,7 @@ export class NewDisastersService {
                                 const numNew = Math.trunc(Number(newValue));
 
                                 if (numExisting !== numNew) {
-                                    console.log(`Updated ${property} -> Old value: ${numExisting}, New value: ${numNew}...`);
+                                    // console.log(`Updated ${property} -> Old value: ${numExisting}, New value: ${numNew}...`);
                                     existingDisaster[property] = disaster[property];
                                     shouldUpdate = true;
                                 }
@@ -145,7 +145,7 @@ export class NewDisastersService {
                         } else if (disaster[property] !== existingDisaster[property]) {
                             // 위도 경도 아닌 값이 바뀌었을 경우 여기서 처리 (단, dStatus는 검색하지 않으니 조심)
 
-                            console.log(`Field to update: ${property}, Old value: ${existingDisaster[property]}, New value: ${disaster[property]}...`);
+                            // console.log(`Field to update: ${property}, Old value: ${existingDisaster[property]}, New value: ${disaster[property]}...`);
                             existingDisaster[property] = disaster[property];
                             shouldUpdate = true;
                         }
@@ -155,7 +155,7 @@ export class NewDisastersService {
                     if (shouldUpdate) {
                         await this.disasterDetailRepository.save(existingDisaster);
                         disasterUpdateCount++;
-                        console.log(`Updated disaster: ${disaster.dID}...`);
+                        // console.log(`Updated disaster: ${disaster.dID}...`);
                     }
 
                 } else { // DB에 없다면 새로 저장하고, 알림을 보낸 뒤 로그 남기기
@@ -164,7 +164,7 @@ export class NewDisastersService {
                         await this.disasterDetailRepository.save(disaster);
                         newDisastersForBroadcast.push(disaster);
                         disasterNewCount++
-                        console.log(`New disaster added to DB: ${disaster.dID}...`);
+                        // console.log(`New disaster added to DB: ${disaster.dID}...`);
 
                     } catch (error) {
                         console.error('Error saving or broadcasting disaster:', error);
@@ -178,7 +178,7 @@ export class NewDisastersService {
             // 위 과정을 통해 set에 남아있는 재난이 있다면, 더이상 GDACS 7-day RSS에 없으니 past로 상태값 변경
             for (const dID of dbDisasterIdSet) {
                 await this.disasterDetailRepository.update({ dID }, { dStatus: 'past' });
-                console.log(`Marked disaster as past: ${dID}.`);
+                // console.log(`Marked disaster as past: ${dID}.`);
             }
 
             // 마지막으로 실제 broadcast 진행 (웹소켓, 이메일)
@@ -190,7 +190,7 @@ export class NewDisastersService {
                         setTimeout(async () => {
                             this.newDisastersGateway.sendDisasterWebsocketAlert(newDisaster);
                             await this.emailAlertsService.sendEmailAlert(newDisaster);
-                            console.log(`New disaster broadcasted via Websocket & Email for ${newDisaster.dID}...`);
+                            // console.log(`New disaster broadcasted via Websocket & Email for ${newDisaster.dID}...`);
                         }, 5000); // Delay in milliseconds, here it's set to 5 seconds
                     }
                 }

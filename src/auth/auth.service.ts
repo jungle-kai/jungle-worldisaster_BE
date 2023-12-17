@@ -87,7 +87,6 @@ export class AuthService {
 
     async findUserByEmail(email: string) {
         const user = await this.userRepository.findOneBy({ email });
-        // console.log(user);
         return user;
     }
 

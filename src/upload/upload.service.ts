@@ -52,16 +52,16 @@ export class UploadService {
 
         //서버 공간에 동영상 임시 저장
         const tempFilePath = path.join("/home/ubuntu/temp", encodedfileName);
-        const disasterDetail = await this.newDisasterRepository.findOne({ where: {dID} });
+        const disasterDetail = await this.newDisasterRepository.findOne({ where: { dID } });
+
         //tempFilePath에 file을 저장
         fs.writeFileSync(tempFilePath, file);
-        console.log(`File saved to ${tempFilePath}`);
+
         //HLS 인코딩
         await this.encodeToHLS(file, encodedfileName, tempFilePath);
         //인코딩이 끝나면, 임시 저장해둔 파일 삭제
         if (fs.existsSync(tempFilePath)) {
             fs.unlinkSync(tempFilePath);
-            console.log(`File deleted from ${tempFilePath}`);
         }
         //HLS 파일 디렉토리
         const baseName = path.basename(encodedfileName, path.extname(encodedfileName));
@@ -70,7 +70,6 @@ export class UploadService {
         //S3에 HLS 파일 업로드
         await this.uploadToS3(hlsFolderPath, baseName);
 
-        console.log('HLS files uploaded to S3');
         //db에 url 저장
         // db에 url 저장
         try {
@@ -81,7 +80,6 @@ export class UploadService {
             video.approve = false;
 
             await this.videoRepository.save(video);
-            // console.log('Video information saved to database');
         } catch (error) {
             console.error('Error during saving video information to database:', error);
             throw new InternalServerErrorException('Error during database operation');
@@ -102,21 +100,20 @@ export class UploadService {
             // const tempFilePath = "C:/Programming/SWJungle_07/나만무/test동영상/file.mp4";   //임시 파일 경로 -> 로컬 환경 테스트 용이라 실제 파일 경로
             fs.writeFileSync(tempFilePath, file);   //임시 파일 생성
             ffmpeg(tempFilePath)
-                .output(path.join(hlsFolderPath, `${baseName}.m3u8`)) 
+                .output(path.join(hlsFolderPath, `${baseName}.m3u8`))
                 .format('hls')
                 .videoCodec('libx264')
                 .audioCodec('aac')
                 .on('end', () => {
-                    console.log('Conversion to HLS completed');
                     fs.unlinkSync(tempFilePath);    //임시 파일 삭제
                     resolve();
                 })
-                .on('error', (err) =>{
+                .on('error', (err) => {
                     console.error('Error:', err);
                     fs.unlinkSync(tempFilePath);    //오류 발생 시 임시 파일 삭제
                     reject(err);
-                }) 
-                .run(); 
+                })
+                .run();
         });//FFMPEG를 사용하여 HLS로 인코딩
     }
 
@@ -130,27 +127,27 @@ export class UploadService {
             //NOTE - 유정 S3 버킷 
             //Bucket: 'worldisaster-test-bucket',
             await this.s3client.send(new PutObjectCommand({
-                    Bucket: 'worldisaster-s3',
-                    Key: `${baseName}/${file}`,
-                    Body: fileStream,
-                    ContentDisposition: 'inline',
-                    ContentType: 'application/vnd.apple.mpegurl'    //HLS 파일의 경우 Content-Type을 지정해주어야 함
+                Bucket: 'worldisaster-s3',
+                Key: `${baseName}/${file}`,
+                Body: fileStream,
+                ContentDisposition: 'inline',
+                ContentType: 'application/vnd.apple.mpegurl'    //HLS 파일의 경우 Content-Type을 지정해주어야 함
             }));
         }
     }
 
     //db objID 로 url 가져오기
-async getVideoUrl(dID: string): Promise<Video[]> {
-    const video = await this.videoRepository.find({ 
-        where: { 
-            dID
-        }
-    });
+    async getVideoUrl(dID: string): Promise<Video[]> {
+        const video = await this.videoRepository.find({
+            where: {
+                dID
+            }
+        });
 
-    // if(!video) {
-    //     throw new NotfoundException(`Video with ID "${id}" not found`);
-    // }
+        // if(!video) {
+        //     throw new NotfoundException(`Video with ID "${id}" not found`);
+        // }
 
-    return video;
-}
+        return video;
+    }
 }

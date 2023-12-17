@@ -14,7 +14,7 @@ export class NewDisastersGateway implements OnGatewayConnection, OnGatewayDiscon
   /* 새로운 연결이 생성되면 Trigger */
   handleConnection(client: Socket, ...args: any[]) {
     this.numberOfConnectedClients++;
-    console.log(`\nAlert Subscribers: ${this.numberOfConnectedClients} (New connection by '${client.id}')`);
+    // console.log(`\nAlert Subscribers: ${this.numberOfConnectedClients} (New connection by '${client.id}')`);
   }
 
   /* 고객들에게 알림을 보내는 역할 */
@@ -26,6 +26,6 @@ export class NewDisastersGateway implements OnGatewayConnection, OnGatewayDiscon
   /* 연결이 끊기면 Trigger */
   handleDisconnect(client: Socket) {
     this.numberOfConnectedClients--;
-    console.log(`\nAlert Subscribers: ${this.numberOfConnectedClients}('${client.id}' disconnected)`);
+    // console.log(`\nAlert Subscribers: ${this.numberOfConnectedClients}('${client.id}' disconnected)`);
   }
 }

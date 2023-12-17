@@ -16,7 +16,6 @@ export class UploadController {
         @Param('dID') dID: string,
         @UploadedFile() file: Express.Multer.File
     ) {
-        console.log("@@@@@@upload video start@@@@@@");
         return await this.uploadService.upload(file.originalname, file.buffer, dID);
 
     }
@@ -24,13 +23,6 @@ export class UploadController {
     async getVideoPage(@Param('dID') dID: string, @Res() res: Response) {
 
         const videos = await this.uploadService.getVideoUrl(dID);
-        console.log("비디오요청왔음");
-        // if(videos.length === 0) {
-        //     console.log('Video not found');
-        //     return res.status(404).send('Video not found');
-        // }
-        // video 배열에서 각 video의 url만 추출하여 새 배열 생성
-        // const videoUrls = videos.map(video => video.video_url);
 
         return res.json(videos);
     }

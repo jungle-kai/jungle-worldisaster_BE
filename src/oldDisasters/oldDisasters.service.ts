@@ -10,7 +10,6 @@ import * as sanitizeHtml from 'sanitize-html'; // HTTP 태그 정리 라이브�
 import { Cron, CronExpression } from '@nestjs/schedule'; // 스케쥴링 라이브러리
 import { firstValueFrom } from 'rxjs'; // 첫 요청을 promise로 돌려줌
 
-// 새로운 재난이 발생하면 Push 해주는 웹소켓 등이 없으니, 주기적으로 리스트 확인이 필요함
 @Injectable()
 export class OldDisastersService {
     private baseUrl = 'https://api.reliefweb.int/v1/disasters?appname=apidoc&limit=1000';
@@ -96,7 +95,7 @@ export class OldDisastersService {
                 await this.fetchAndSaveRwDisasterDetails(allEntries);
                 return { success: true, message: 'Updated (ReliefWeb Disasters)' };
             } catch (error) {
-                console.log('@ Disaster Auto Update Failed: ' + error.message);
+                console.log('Disaster Auto Update Failed: ' + error.message);
                 return { success: false, message: 'Update Failed (ReliefWeb Disasters)' };
             }
         }
@@ -111,7 +110,7 @@ export class OldDisastersService {
         // rawEntries 필터 : DB에 매칭되는 DID가 없는 경우에만 API 콜 실행
         const newEntries = rawEntries.filter(entry => !existingdIDs.has(entry.id));
         if (newEntries.length == 0) {
-            console.log('No new entries to update');
+            // console.log('No new entries to update');
             return;
         }
 
@@ -210,13 +209,12 @@ export class OldDisastersService {
 
         } // 여기까지 100개 단위로 처리
 
-        console.log('New or updated disaster details saved successfully');
+        // console.log('New or updated disaster details saved successfully');
     }
 
     // (Deprecated)
     // @Cron(CronExpression.EVERY_MINUTE)
     // async handleCron() {
-    //     console.log("\n@ Disaster Auto Update Started - Regular 1-minute API Request made to fetch Disasters");
     //     await this.fetchAndCompareCount();
     // }
 }

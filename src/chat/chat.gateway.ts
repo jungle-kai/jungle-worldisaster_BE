@@ -49,7 +49,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   /* 새로운 연결이 생성되면 Trigger */
   handleConnection(client: Socket) {
     this.numberOfConnectedClients++;
-    console.log(`\nChat Websocket Subscribers: ${this.numberOfConnectedClients} (New connection by '${client.id}')`);
+    // console.log(`\nChat Websocket Subscribers: ${this.numberOfConnectedClients} (New connection by '${client.id}')`);
   }
 
   /* Client가 특정 Room을 조인하는 경우를 처리 */
@@ -68,7 +68,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   /* 서버가 Client들에 의한 "Message"를 구독 (메시지 발생 시 Trigger) */
   @SubscribeMessage('message')
   async handleMessage(client: Socket, payload: { chatSenderID: string; chatRoomID: string; chatMessage: string }): Promise<void> {
-    console.log(payload); // debug
 
     try {
 
@@ -89,6 +88,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   /* 기존 연결이 끊기면 Trigger */
   handleDisconnect(client: Socket) {
     this.numberOfConnectedClients--;
-    console.log(`\nChat Websocket Subscribers: ${this.numberOfConnectedClients} ('${client.id}' disconnected)`);
+    // console.log(`\nChat Websocket Subscribers: ${this.numberOfConnectedClients} ('${client.id}' disconnected)`);
   }
 }

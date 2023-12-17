@@ -27,11 +27,6 @@ export class LiveNewsService {
         const dCountry = getDisasterDetail.dCountry;
         const dType = getDisasterDetail.dType;
 
-        // console.log('In getDisastersTypeBydID');
-        // console.log(`year: ${dDate}, country: ${dCountry}, dType: ${dType}`);
-
-        // const articles = await this.getDisastersByCountryAndYearAndTypeAndID(country, year, dType, dID);
-
         return {
             dType: getDisasterDetail.dType,
             dCountry: getDisasterDetail.dCountry,
@@ -80,22 +75,20 @@ export class LiveNewsService {
             date: `${formmatDate}`,
             limit: 10,
         });
-        // console.log(`dID : ${dID} dType : ${dType} dCountry : ${dCountry}`)
+
         try {
             const response = await axios.get(`http://api.mediastack.com/v1/news?${params}`);
             for (let article of response.data.data) {
                 const headline = article.title;
                 const url = article.url;
-                
+
                 const liveArticle = new LiveNewsEntity();
                 liveArticle.headline = headline;
                 liveArticle.url = url;
                 liveArticle.dID = dID; // 할당
                 liveArticle.author = article.author;
                 liveArticle.image = article.image;
-                // console.log(liveArticle);
                 await this.liveArticleRepository.save(liveArticle);
-                // console.log(`success save article ${headline}`);
             }
         } catch (error) {
             if (error.response) {
@@ -113,8 +106,6 @@ export class LiveNewsService {
     //!SECTION Get Live News Service
     async getLiveArticleBydID(dID: string): Promise<LiveNewsEntity[]> {
         const liveNewsTable = await this.liveArticleRepository.find({ where: { dID } });
-        // console.log(dID);
-        // console.log(liveNewsTable);
         if (!liveNewsTable) {
             throw new Error('No live news found.');
         }
@@ -143,8 +134,6 @@ export class LiveNewsService {
             .from(LiveNewsEntity) // 'Article'은 가정된 엔티티 클래스명입니다. 실제 데이터베이스에 맞게 조정하세요.
             .where('objectId NOT IN (:...ids)', { ids: latestIds })
             .execute();
-
-        console.log(`Deleted duplicate articles, keeping the latest ones.`);
     }
     //newDisaster에서 dStatus가 real-time인 재난 가져오기
     async getRealtimeDisasters() {
@@ -177,10 +166,8 @@ export class LiveNewsService {
 
                 // 가져온 기사를 데이터베이스에 저장
                 await this.storeLiveArticle(disaster.dID, underTenArticlesDisaster.dDate, underTenArticlesDisaster.dType, underTenArticlesDisaster.dCountry);
-                // console.log(`Stored live news for disaster ID ${disaster.dID}.`);
             } else {
                 // 기사 수가 10개 이상인 경우 pass
-                // console.log(`Skipping disaster ID ${disaster.dID}, already has sufficient articles.`);
             }
         }
     }

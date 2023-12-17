@@ -11,8 +11,6 @@ export class LiveNewsController {
     }
     @Get('force')
     async storeDisastersLiveArticle() {
-        console.log('API storeDisastersLiveArticle');
-        // real-time인 재난만 저장
         const getDisastersIDList = await this.liveNewsService.getDisastersID();
 
         for (let i = 0; i < getDisastersIDList.length; i++) {
@@ -33,14 +31,6 @@ export class LiveNewsController {
     //dID로 news 조회
     @Get('/:dID')
     async getLiveArticleBydID(@Param('dID') dID: string): Promise<LiveNewsEntity[]> {
-        console.log('API get articles by dID');
         return this.liveNewsService.getLiveArticleBydID(dID);
     }
-
-    // @Cron(CronExpression.EVERY_MINUTE)
-    // async handleCron() {
-    //     // console.log("\n@ Get Live News Every MINUTE @\n");
-    //     console.log("\n Live news call Successful\n")
-    //     await this.liveNewsService.fetchAndStoreRealtimeDisasterNews();
-    // }
 }

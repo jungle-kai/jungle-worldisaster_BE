@@ -36,11 +36,8 @@ export class PayPalController {
   @UseGuards(AuthGuard('jwt-access'))
   @Post('paypal')
   async createPayment(@Req() req: CustomRequest, @Res() res: Response, @Body() body: any) {
-    console.log(body);
     const { amount, dID, currency } = body;
     const { email } = req.user;
-
-    console.log(dID);
 
     try {
       const user = await this.authService.findUserByEmail(email);

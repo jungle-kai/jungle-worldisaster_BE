@@ -21,7 +21,7 @@ export class EmailAlertsController {
             throw new UnauthorizedException('User not found');
         }
 
-        console.log(`\nAPI : GET call made to fetch all alert values for ${email}`);
+        // console.log(`\nAPI : GET call made to fetch all alert values for ${email}`);
         const result = await this.emailAlertsService.getEmailAlerts(email);
         return result;
     }
@@ -32,8 +32,6 @@ export class EmailAlertsController {
     @UsePipes(new ValidationPipe({ transform: true }))
     async createEmailAlert(@Req() req: CustomRequest, @Body() createEmailAlertDto: CreateEmailAlertDto) {
         const { email } = req.user;
-        console.log('Raw Body:', req.body); // Log the raw body
-        console.log('DTO:', createEmailAlertDto); // Log the DTO
 
         const user = await this.authService.findUserByEmail(email);
         if (!user) {
@@ -46,7 +44,7 @@ export class EmailAlertsController {
             throw new BadRequestException('At least one alert level must be true');
         }
 
-        console.log(`\nAPI : POST call made to create new alert for ${email}`);
+        // console.log(`\nAPI : POST call made to create new alert for ${email}`);
         const result = await this.emailAlertsService.createEmailAlert(email, createEmailAlertDto);
         return result;
     }
@@ -61,7 +59,7 @@ export class EmailAlertsController {
             throw new UnauthorizedException('User not found');
         }
 
-        console.log(`\nAPI : DELETE call made to delete one alert for ${email}`);
+        // console.log(`\nAPI : DELETE call made to delete one alert for ${email}`);
         await this.emailAlertsService.deleteEmailAlerts(objectId, email);
     }
 
@@ -75,7 +73,7 @@ export class EmailAlertsController {
             throw new UnauthorizedException('User not found');
         }
 
-        console.log(`\nAPI : DELETE call made to delete all alerts for ${email}`);
+        // console.log(`\nAPI : DELETE call made to delete all alerts for ${email}`);
         const result = await this.emailAlertsService.deleteAllAlerts(email);
         return result;
     }

@@ -11,11 +11,11 @@ import { Video } from 'src/upload/video.entity';
 
 export const typeORMConfig: TypeOrmModuleOptions = {
     type: 'postgres',
-    host: 'worldisaster-database.c1bs1dug29ac.ap-northeast-2.rds.amazonaws.com',
+    host: process.env.AWS_HOST,
     port: 5432,
-    username: 'worldisaster',
-    password: 'world123',
-    database: 'worldisaster_db',
+    username: process.env.AWS_USER,
+    password: process.env.AWS_PWD,
+    database: process.env.AWS_DBN,
     entities: [__dirname + '/../**/*.entity.{js,ts}',
         CountryMappings,
         CountryEntity,
